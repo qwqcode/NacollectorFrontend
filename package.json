@@ -17,8 +17,9 @@
     "start": "npm run dev"
   },
   "dependencies": {
-    "jquery": "^3.3.1",
+    "jquery": "^3.4.0",
     "js-base64": "^2.5.0",
+    "lodash": "^4.17.11",
     "material-design-iconic-font": "^2.2.0"
   },
   "devDependencies": {
@@ -27,6 +28,7 @@
     "babel-eslint": "^10.0.1",
     "babel-loader": "^8.0.4",
     "clean-webpack-plugin": "^1.0.0",
+    "common-tags": "^1.8.0",
     "copy-webpack-plugin": "^4.6.0",
     "cross-env": "^5.2.0",
     "css-loader": "^2.0.0",
