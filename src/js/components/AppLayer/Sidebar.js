@@ -1,151 +1,161 @@
-import AppLayer from '../AppLayer'
+import { html } from 'common-tags'
 
-/**
- * 内容层 侧边栏
- */
 const Sidebar = {
   list: {},
   // 当前显示
   currentDisplayedKey: null,
-  // 注册新的 Sidebar
+  /**
+   * 注册新的 Sidebar
+   * @return { SidebarItem }
+   */
   register (key) {
-    if (this.list.hasOwnProperty(key)) {
-      throw Error(`侧边栏层：${key} 已存在于list中`)
-    }
+    if (this.list.hasOwnProperty(key)) { throw Error(`侧边栏层：${key} 已存在于list中`) }
+    let sidebarItem = new SidebarItem(key)
+    // 加入 List
+    this.list[key] = sidebarItem
+    return sidebarItem
+  },
+  /**
+   * 获取 sidebarObj
+   * @return { SidebarItem }
+   */
+  get (key) {
+    if (!this.list.hasOwnProperty(key)) { return null }
+    return this.list[key]
+  }
+}
 
-    let layerSel = this.getLayerSel()
-    $(`<div class="sidebar-block" data-sidebar-layer-key="${key}" />`)
-      .appendTo($(layerSel))
-    let sidebarSel = `[data-sidebar-layer-key="${key}"]`
-    let sidebarObj = {}
-    // 设置标题
-    sidebarObj.setTitle = (val, titleBg) => {
-      let header = $(`
+class SidebarItem {
+  constructor (key) {
+    this._key = key
+    this._elem = $(html`<div class="sidebar-block" data-sidebar-layer-key="${key}" />`)
+    this._elem.appendTo(this.getLayerElem())
+
+    this._width = 360
+  }
+
+  getKey () {
+    return this._key
+  }
+
+  getElem () {
+    return this._elem
+  }
+
+  /** 设置标题 */
+  setTitle (val, titleBg) {
+    let header = $(html`
       <div class="sidebar-header">
         <div class="header-left">${val}</div>
         <div class="header-right">
           <button type="button" data-toggle="sidebar-layer-hide"><i class="zmdi zmdi-close"></i></button>
         </div>
       </div>
-      `)
-      if (titleBg) {
-        header.css('background', titleBg)
-      }
-      header.prependTo(sidebarSel)
-      $(`${sidebarSel} [data-toggle="sidebar-layer-hide"]`).click(() => {
-        sidebarObj.hide()
-      })
+    `)
+    if (titleBg) {
+      header.css('background', titleBg)
     }
-    // 设置内容
-    sidebarObj.setInner = (val) => {
-      $(`<div class="sidebar-inner">${val}</div>`).appendTo(sidebarSel)
+    header.prependTo(this.getElem())
+    this.getElem().find('[data-toggle="sidebar-layer-hide"]').click(() => {
+      this.hide()
+    })
+  }
+
+  /** 设置内容 */
+  setInner (elem) {
+    let innerElem = $(`<div class="sidebar-inner"></div>`).appendTo(this.getElem())
+    innerElem.append(elem)
+  }
+
+  /** 设置宽度 */
+  setWidth (width) {
+    if (!!width && !isNaN(parseInt(width))) { this._width = parseInt(width) }
+
+    this.getElem().css('width', `${this._width}px`).css('transform', `translate(${this._width}px, 0px)`)
+  }
+
+  /** 显示 */
+  show () {
+    if (Sidebar.currentDisplayedKey !== null && Sidebar.currentDisplayedKey !== this.getKey()) {
+      Sidebar.get(Sidebar.currentDisplayedKey).hide()
     }
-    sidebarObj.width = 360
+
+    if (Sidebar.currentDisplayedKey === this.getKey()) { throw Error('侧边栏层：' + this.getKey() + ' 已显示') }
+
+    if (!$(this.getLayerElem()).hasClass('show')) { $(this.getLayerElem()).addClass('show') }
+
     // 设置宽度
-    sidebarObj.setWidth = (width) => {
-      if (!!width && !isNaN(parseInt(width))) { sidebarObj.width = parseInt(width) }
+    this.setWidth()
 
-      $(sidebarSel).css('width', `${sidebarObj.width}px`).css('transform', `translate(${sidebarObj.width}px, 0px)`)
-    }
-    // 显示
-    sidebarObj.show = () => {
-      if (AppLayer.Sidebar.currentDisplayedKey !== null && AppLayer.Sidebar.currentDisplayedKey !== key) {
-        AppLayer.Sidebar.get(AppLayer.Sidebar.currentDisplayedKey).hide()
-      }
+    this.getElem()
+      .css('transform', 'translate(' + (this.getElem().width() + 10) + 'px, 0px)')
+      .addClass('show')
 
-      if (AppLayer.Sidebar.currentDisplayedKey === key) { throw Error('侧边栏层：' + key + ' 已显示') }
+    $('body').css('overflow', 'hidden')
 
-      if (!$(layerSel).hasClass('show')) { $(layerSel).addClass('show') }
-
-      // 设置宽度
-      sidebarObj.setWidth()
-
-      $(sidebarSel)
-        .css('transform', 'translate(' + ($(sidebarSel).width() + 10) + 'px, 0px)')
-        .addClass('show')
-
-      $('body').css('overflow', 'hidden')
-
-      if ($('.sidebar-layer > .sidebar-block.show').length !== 0) {
-        // 变为标签内最后一个元素，显示置顶
-        $(sidebarSel).insertAfter($('.sidebar-layer > .sidebar-block.show:last-child'))
-      }
-
-      // 若点按的元素非 block 内元素
-      setTimeout(() => {
-        $(document).bind('click.sidebar-layer-' + key, (e) => {
-          if (!$(e.target).is(sidebarSel) && !$(e.target).closest(sidebarSel).length) {
-            sidebarObj.hide()
-          }
-        })
-      }, 20)
-
-      AppLayer.Sidebar.currentDisplayedKey = key
-    }
-    // 隐藏
-    sidebarObj.hide = () => {
-      if (AppLayer.Sidebar.currentDisplayedKey === null || AppLayer.Sidebar.currentDisplayedKey !== key) { throw Error('侧边栏层：' + key + ' 未显示') }
-
-      $(sidebarSel).removeClass('show')
-
-      if ($('.sidebar-layer > .sidebar-block.show').length === 0) {
-        // 若已经没有显示层
-        $(layerSel).removeClass('show')
-        $('body').css('overflow', '')
-      }
-
-      $(document).unbind('click.sidebar-layer-' + key) // 解绑事件
-
-      AppLayer.Sidebar.currentDisplayedKey = null
-    }
-    // 显隐切换
-    sidebarObj.toggle = () => {
-      if (!sidebarObj.isShow()) {
-        sidebarObj.show()
-      } else {
-        sidebarObj.hide()
-      }
-    }
-    // 是否显示
-    sidebarObj.isShow = () => {
-      return $(layerSel).hasClass('show') && $(sidebarSel).hasClass('show')
-    }
-    // 获取 Selector
-    sidebarObj.getSel = () => {
-      return sidebarSel
-    }
-    // 获取 Inner Selector
-    sidebarObj.getInnerSel = () => {
-      if ($(sidebarObj.getSel() + ' .sidebar-inner').length === 0) { sidebarObj.setInner('') }
-
-      return sidebarObj.getSel() + ' .sidebar-inner'
-    }
-    // 获取 InnerDom
-    sidebarObj.getInnerDom = () => {
-      if ($(sidebarObj.getSel() + ' .sidebar-inner').length === 0) { sidebarObj.setInner('') }
-
-      return $(sidebarObj.getSel() + ' .sidebar-inner')
+    if ($('.sidebar-layer > .sidebar-block.show').length !== 0) {
+      // 变为标签内最后一个元素，显示置顶
+      this.getElem().insertAfter($('.sidebar-layer > .sidebar-block.show:last-child'))
     }
 
-    // 加入 List
-    this.list[key] = sidebarObj
+    // 若点按的元素非 block 内元素
+    setTimeout(() => {
+      $(document).bind('click.sidebar-layer-' + this.getKey(), (e) => {
+        if ($(e.target).is(this.getLayerElem()) || !$(e.target).closest(this.getLayerElem()).length) {
+          this.hide()
+        }
+      })
+    }, 20)
 
-    return sidebarObj
-  },
-  // 获取 sidebarObj
-  get (key) {
-    if (!this.list.hasOwnProperty(key)) { return null }
+    Sidebar.currentDisplayedKey = this.getKey()
+  }
 
-    return this.list[key]
-  },
-  // 获取层 Selector
-  getLayerSel () {
-    let layerSel = '.sidebar-layer'
+  /** 隐藏 */
+  hide () {
+    if (
+      Sidebar.currentDisplayedKey === null ||
+      Sidebar.currentDisplayedKey !== this.getKey()
+    ) { throw Error('侧边栏层：' + this.getKey() + ' 未显示') }
 
-    if ($(layerSel).length === 0) { $('<div class="sidebar-layer" />').appendTo('body') }
+    this.getElem().removeClass('show')
 
-    return layerSel
+    if ($('.sidebar-layer > .sidebar-block.show').length === 0) {
+      // 若已经没有显示层
+      $(this.getLayerElem()).removeClass('show')
+      $('body').css('overflow', '')
+    }
+
+    $(document).unbind('click.sidebar-layer-' + this.getKey()) // 解绑事件
+
+    Sidebar.currentDisplayedKey = null
+  }
+
+  /** 显隐切换 */
+  toggle () {
+    if (!this.isShow()) {
+      this.show()
+    } else {
+      this.hide()
+    }
+  }
+  /** 是否显示 */
+  isShow () {
+    return $(this.getLayerElem()).hasClass('show') && this.getElem().hasClass('show')
+  }
+
+  /** 获取 Inner Elem */
+  getInnerElem () {
+    return this.getElem().find('.sidebar-inner')
+  }
+
+  /** 获取层 Elem */
+  getLayerElem () {
+    let elem = $('.sidebar-layer')
+    if (elem.length === 0) {
+      elem = $('<div class="sidebar-layer" />').appendTo('body')
+    }
+    return elem
   }
 }
 
-export default Sidebar
+export { Sidebar, SidebarItem }

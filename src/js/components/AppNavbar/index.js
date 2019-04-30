@@ -1,11 +1,12 @@
 /**
  * 导航栏
  */
-import Panel from './Panel'
-import Btn from './Btn'
+import { Panel } from './Panel'
+import BtnBox from './BtnBox'
 import Task from '../Task'
 import Setting from '../Setting'
 import { Base64 } from 'js-base64'
+import { html } from 'common-tags'
 
 const AppNavbar = {
   sel: {
@@ -14,9 +15,16 @@ const AppNavbar = {
   },
   // 初始化 Navbar
   init () {
-    $('<div class="left-items"><div class="nav-title"></div></div><div class="right-items"><div class="nav-btns"></div></div>').appendTo(this.sel.nav)
+    $(html`
+      <div class="left-items">
+        <div class="nav-title"></div>
+      </div>
+      <div class="right-items">
+        <div class="nav-btn-box"></div>
+      </div>
+    `).appendTo(this.sel.nav)
     // 导航栏操作按钮
-    AppNavbar.Btn.groupAdd('main-btns', {
+    AppNavbar.BtnBox.groupAdd('main-btns', {
       taskManager: {
         icon: 'assignment',
         title: '任务列表',
@@ -37,7 +45,7 @@ const AppNavbar = {
       }
     })
 
-    AppNavbar.Btn.groupAdd('task-runtime', {
+    AppNavbar.BtnBox.groupAdd('task-runtime', {
       backToTaskGen: {
         icon: 'chevron-left',
         title: '返回任务生成器',
@@ -78,10 +86,9 @@ const AppNavbar = {
   // 标题获取
   getTitle () {
     return $(this.sel.navTitle).text()
-  }
+  },
+  BtnBox,
+  Panel
 }
-
-AppNavbar.Panel = Panel
-AppNavbar.Btn = Btn
 
 export default AppNavbar
