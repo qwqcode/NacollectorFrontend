@@ -1,7 +1,7 @@
 const path = require('path')
 const webpack = require('webpack')
 const HtmlWebPackPlugin = require('html-webpack-plugin')
-const CleanWebpackPlugin = require('clean-webpack-plugin')
+const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const PreloadWebpackPlugin = require('preload-webpack-plugin')
@@ -23,7 +23,7 @@ const config = {
   devtool: IS_DEV ? 'cheap-module-source-map' : 'source-map',
   entry: path.resolve(SRC_PATH, './js/index.ts'),
   output: {
-    filename: 'js/[name].[hash].js',
+    filename: 'js/[name].js',
     path: BUILD_PATH
   },
   module: {
@@ -119,7 +119,7 @@ const config = {
     ]
   },
   plugins: [
-    new CleanWebpackPlugin(['dist']),
+    new CleanWebpackPlugin(),
     new webpack.ProvidePlugin({
       $: 'jquery',
       jQuery: 'jquery',
