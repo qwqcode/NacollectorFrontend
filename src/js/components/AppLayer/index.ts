@@ -6,7 +6,7 @@ import { Sidebar } from './Sidebar'
  * 内容层
  */
 const AppLayer = {
-  Sidebar,
+  Sidebar: new Sidebar(),
   Dialog,
   Notify
 }

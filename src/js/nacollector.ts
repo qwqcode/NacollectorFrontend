@@ -3,28 +3,9 @@
  * https://github.com/qwqcode/Nacollector
  */
 
-import AppNavbar from './components/AppNavbar'
-import TaskGen from './components/TaskGen'
-import Task from './components/Task'
-import Downloads from './components/Downloads'
-import AppWidget from './components/AppWidget'
-import Setting from './components/Setting'
-import AppLayer from './components/AppLayer'
-import AppUpdate from './components/AppUpdate'
-import AppAction from './components/AppAction'
-import InputValidators from './utils/InputValidators'
+import App, { init as CompInit } from './components/index'
 
-window.$ = $
-window.AppNavbar = AppNavbar
-window.TaskGen = TaskGen
-window.Task = Task
-window.Downloads = Downloads
-window.AppWidget = AppWidget
-window.Setting = Setting
-window.AppLayer = AppLayer
-window.AppUpdate = AppUpdate
-window.AppAction = AppAction
-window.InputValidators = InputValidators
+CompInit()
 
 const AppWrapEl = window.AppWrapEl = $('.wrap')
 
@@ -33,7 +14,7 @@ const AppWrapEl = window.AppWrapEl = $('.wrap')
  */
 $(document).ready(() => {
   // 初始化 NavBar
-  AppNavbar.init()
+  App.AppNavbar.init()
 
   // 初始化 Tooltip
   $('[data-toggle="tooltip"]').tooltip()
@@ -45,34 +26,34 @@ $(document).ready(() => {
   }, 10)
 
   // 任务生成器初始化
-  TaskGen.init()
+  App.TaskGen.init()
 
   // 任务管理器层初始化
-  Task.taskManagerLayer.init()
+  App.Task.taskManagerLayer.init()
 
   // 点击操作按钮列表第一个
-  $(TaskGen.sel.formToggleBtns + ' a:nth-child(1)').click()
+  $(App.TaskGen.sel.formToggleBtns + ' a:nth-child(1)').click()
 
   // 下载面板初始化
-  Downloads.init()
+  App.Downloads.init()
 
   // 设置初始化
-  Setting.init()
+  App.Setting.init()
 
   // 设置程序当前版本号
-  AppAction.tryGetVersion((version: string) => {
+  App.AppAction.tryGetVersion((version: string) => {
     if (typeof (version) !== 'undefined') {
-      AppAction.version = version
+      App.AppAction.version = version
     }
   })
 
   // 更新模块初始化
-  AppUpdate.init()
+  App.AppUpdate.init()
 
   // 打开 开发者工具
   $(document).keydown((e) => {
     if (e.altKey && e.keyCode === 123) {
-      AppAction.showDevTools()
+      App.AppAction.showDevTools()
     }
   })
 
@@ -81,7 +62,7 @@ $(document).ready(() => {
 
 // 根据 URL 创建一个下载任务
 window.downloadFile = (srcUrl: string) => {
-  AppAction.downloadUrl(srcUrl)
+  App.AppAction.downloadUrl(srcUrl)
 }
 
 /**
@@ -112,7 +93,7 @@ function initMarked () {
   const marked = require('marked')
   let renderer = new marked.Renderer()
   const linkRenderer = renderer.link
-  renderer.link = function (href: any, title: any, text: any) {
+  renderer.link = function (href: any, title: any, text: any): string {
     const html = linkRenderer.call(renderer, href, title, text)
     return html.replace(/^<a /, '<a target="_blank" ')
   }

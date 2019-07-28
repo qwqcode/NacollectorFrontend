@@ -6,7 +6,7 @@ export default class BtnItem {
   protected _label: string
   protected _icon: string
 
-  public constructor(name: string, label: string, icon: string) {
+  public constructor (name: string, label: string, icon: string) {
     this._name = name
     this._label = label
     this._icon = icon
@@ -18,28 +18,28 @@ export default class BtnItem {
       `)
   }
 
-  public getName() {
+  public getName () {
     return this._name
   }
 
-  public getLabel() {
+  public getLabel () {
     return this._label
   }
 
-  public getIcon() {
+  public getIcon () {
     return this._icon
   }
 
-  public getElem() {
+  public getElem () {
     return this._elem
   }
 
-  public showBadge() {
+  public showBadge () {
     this._elem.addClass('show-top-badge')
     return this
   }
 
-  public hideBadge() {
+  public hideBadge () {
     this._elem.removeClass('show-top-badge')
     return this
   }

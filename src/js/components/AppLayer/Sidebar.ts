@@ -1,37 +1,39 @@
 import { html } from 'common-tags'
 
 class Sidebar {
-  public static list: {[key: string]: SidebarItem} = {}
+  public list: {[key: string]: SidebarItem} = {}
 
   // 当前显示
-  public static currentDisplayedKey: string = null
+  public currentDisplayedKey: string = null
 
   /**
    * 注册新的 Sidebar
    */
-  public static register(key: string): SidebarItem {
+  public register (key: string): SidebarItem {
     if (this.list.hasOwnProperty(key)) { throw Error(`侧边栏层：${key} 已存在于list中`) }
-    let sidebarItem = new SidebarItem(key)
+    let sidebarItem = new SidebarItem(this, key)
     // 加入 List
     this.list[key] = sidebarItem
     return sidebarItem
   }
-  
+
   /**
    * 获取 sidebarObj
    */
-  public static get(key: string): SidebarItem {
+  public get (key: string): SidebarItem {
     if (!this.list.hasOwnProperty(key)) { return null }
     return this.list[key]
   }
 }
 
 class SidebarItem {
+  protected _sidebar: Sidebar
   protected _key: string
   protected _elem: JQuery
   protected _width: number
 
-  public constructor(key: string) {
+  public constructor (sidebar: Sidebar, key: string) {
+    this._sidebar = sidebar
     this._key = key
     this._elem = $(html`<div class="sidebar-block" data-sidebar-layer-key="${key}" />`)
     this._elem.appendTo(this.getLayerElem())
@@ -39,16 +41,16 @@ class SidebarItem {
     this._width = 360
   }
 
-  public getKey() {
+  public getKey () {
     return this._key
   }
 
-  public getElem() {
+  public getElem () {
     return this._elem
   }
 
   /** 设置标题 */
-  public setTitle(val: string, titleBg: string) {
+  public setTitle (val: string, titleBg: string) {
     let header = $(html`
       <div class="sidebar-header">
         <div class="header-left">${val}</div>
@@ -67,13 +69,13 @@ class SidebarItem {
   }
 
   /** 设置内容 */
-  public setInner(elem: JQuery|string) {
+  public setInner (elem: JQuery|string) {
     let innerElem = $(`<div class="sidebar-inner"></div>`).appendTo(this._elem)
     innerElem.append(elem)
   }
 
   /** 设置宽度 */
-  public setWidth(width?: number) {
+  public setWidth (width?: number) {
     if (width !== undefined) {
       this._width = width
     }
@@ -81,12 +83,12 @@ class SidebarItem {
   }
 
   /** 显示 */
-  public show() {
-    if (Sidebar.currentDisplayedKey !== null && Sidebar.currentDisplayedKey !== this.getKey()) {
-      Sidebar.get(Sidebar.currentDisplayedKey).hide()
+  public show () {
+    if (this._sidebar.currentDisplayedKey !== null && this._sidebar.currentDisplayedKey !== this.getKey()) {
+      this._sidebar.get(this._sidebar.currentDisplayedKey).hide()
     }
 
-    if (Sidebar.currentDisplayedKey === this.getKey()) { throw Error('侧边栏层：' + this.getKey() + ' 已显示') }
+    if (this._sidebar.currentDisplayedKey === this.getKey()) { throw Error('侧边栏层：' + this.getKey() + ' 已显示') }
 
     if (!$(this.getLayerElem()).hasClass('show')) { $(this.getLayerElem()).addClass('show') }
 
@@ -94,7 +96,7 @@ class SidebarItem {
     this.setWidth()
 
     this._elem
-      .css('transform', 'translate(' + (this._elem.width() + 10) + 'px, 0px)')
+      .css('transform', `translate(${(this._elem.width() + 10)}px, 0px)`)
       .addClass('show')
 
     $('body').css('overflow', 'hidden')
@@ -113,14 +115,14 @@ class SidebarItem {
       })
     }, 20)
 
-    Sidebar.currentDisplayedKey = this.getKey()
+    this._sidebar.currentDisplayedKey = this.getKey()
   }
 
   /** 隐藏 */
   public hide () {
     if (
-      Sidebar.currentDisplayedKey === null ||
-      Sidebar.currentDisplayedKey !== this.getKey()
+      this._sidebar.currentDisplayedKey === null ||
+      this._sidebar.currentDisplayedKey !== this.getKey()
     ) { throw Error('侧边栏层：' + this.getKey() + ' 未显示') }
 
     this._elem.removeClass('show')
@@ -133,11 +135,11 @@ class SidebarItem {
 
     $(document).unbind('click.sidebar-layer-' + this.getKey()) // 解绑事件
 
-    Sidebar.currentDisplayedKey = null
+    this._sidebar.currentDisplayedKey = null
   }
 
   /** 显隐切换 */
-  public toggle() {
+  public toggle () {
     if (!this.isShow()) {
       this.show()
     } else {
@@ -146,17 +148,17 @@ class SidebarItem {
   }
 
   /** 是否显示 */
-  public isShow() {
+  public isShow () {
     return $(this.getLayerElem()).hasClass('show') && this._elem.hasClass('show')
   }
 
   /** 获取 Inner Elem */
-  public getInnerElem() {
+  public getInnerElem () {
     return this._elem.find('.sidebar-inner')
   }
 
   /** 获取层 Elem */
-  public getLayerElem() {
+  public getLayerElem () {
     let elem = $('.sidebar-layer')
     if (elem.length === 0) {
       elem = $('<div class="sidebar-layer" />').appendTo('body')

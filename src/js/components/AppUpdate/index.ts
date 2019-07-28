@@ -1,10 +1,6 @@
-import AppLayer from '../AppLayer'
-import AppAction from '../AppAction'
-import Dialog from '../AppLayer/Dialog'
-import { html } from 'common-tags'
+import App from '../.'
 import Notify from '../AppLayer/Notify'
 import AppUpdatePanel from './AppUpdatePanel'
-import Task from '../Task';
 
 const AppConfig = window.AppConfig
 const UpdateAction = window.UpdateAction || {}
@@ -14,10 +10,10 @@ const UpdateAction = window.UpdateAction || {}
  */
 export default class AppUpdate {
   /** 模块版本号列表 */
-  public static moduleVersionList: any = {}
-  public static panel: AppUpdatePanel
+  public moduleVersionList: any = {}
+  public panel: AppUpdatePanel
 
-  public static async init() {
+  public async init () {
     // 获取升级参数
     let updateParms: any
     try {
@@ -39,7 +35,7 @@ export default class AppUpdate {
   }
 
   /** 刷新模块版本号列表 */
-  public static async refreshModuleVersionList() {
+  public async refreshModuleVersionList () {
     try {
       this.moduleVersionList = await UpdateAction.getAllModuleVersion()
     } catch {
@@ -48,7 +44,7 @@ export default class AppUpdate {
   }
 
   /** 打开更新面板 */
-  public static openPanel(remoteData: any = null) {
+  public openPanel (remoteData: any = null) {
     this.panel = new AppUpdatePanel(remoteData)
 
     if (remoteData === null) {
@@ -63,13 +59,12 @@ export default class AppUpdate {
   }
 
   // 获取已打开的面板
-  public static getPanel()
-  {
+  public getPanel () {
     return this.panel
   }
 
   /** 判断是否需要更新 */
-  public static isNeedUpdate(remoteData: any): boolean {
+  public isNeedUpdate (remoteData: any): boolean {
     let localVersionList = this.moduleVersionList
     let remoteModules = remoteData['modules']
 
@@ -78,23 +73,22 @@ export default class AppUpdate {
     for (let i in remoteModules) {
       let moduleName = remoteModules[i]['name']
       if (
-        !this.moduleVersionList.hasOwnProperty(moduleName) // 新的模块
-        || this.isHigherVersion(localVersionList[moduleName], remoteModules[i]['version']) // 更高版本
-      )
-        needUpdate = true
+        !this.moduleVersionList.hasOwnProperty(moduleName) || // 新的模块
+        this.isHigherVersion(localVersionList[moduleName], remoteModules[i]['version']) // 更高版本
+      ) { needUpdate = true }
     }
 
     return needUpdate
   }
 
   /** 开始更新 */
-  public static startUpdate(remoteData: any, localModuleVersionList: any) {
+  public startUpdate (remoteData: any, localModuleVersionList: any) {
     if (!this.isNeedUpdate(remoteData)) {
       Notify.success('无需更新')
       return
     }
 
-    if (Task.isTaskRunning()) {
+    if (App.Task.isTaskRunning()) {
       Notify.error('在更新之前，请先终止正在运行的任务')
       return
     }
@@ -102,14 +96,14 @@ export default class AppUpdate {
     this.panel.setIsUpdating({
       onUiReady: async () => {
         // 创建更新模块列表
-        let updateModules: Array<any> = []
+        let updateModules: any[] = []
         for (let i in remoteData['modules']) {
           let module = remoteData['modules'][i]
           let remoteVersion = module['version'] || ''
           let localVersion = this.moduleVersionList[module['name']] || ''
           if (
-            !this.moduleVersionList.hasOwnProperty(module['name']) // 新的模块
-            || this.isHigherVersion(localVersion, remoteVersion) // 全新版本
+            !this.moduleVersionList.hasOwnProperty(module['name']) || // 新的模块
+            this.isHigherVersion(localVersion, remoteVersion) // 全新版本
           ) {
             updateModules.push(module)
           }
@@ -126,7 +120,7 @@ export default class AppUpdate {
   }
 
   /** 远程请求获取更新 */
-  public static reqUpdates(onFinish: Function) {
+  public reqUpdates (onFinish: Function) {
     // 执行请求
     $.ajax({
       type: 'GET',
@@ -136,13 +130,13 @@ export default class AppUpdate {
         'token': AppConfig.updateCheckToken,
         'time': new Date().getTime() // 防缓存
       },
-      beforeSend() {},
-      success(remoteData) {
-        if (!!onFinish) onFinish(remoteData)
+      beforeSend () {},
+      success (remoteData) {
+        if (onFinish) onFinish(remoteData)
       },
-      error() {
-        if (!!onFinish) onFinish(null)
-        AppLayer.Notify.error('更新信息获取失败')
+      error () {
+        if (onFinish) onFinish(null)
+        App.AppLayer.Notify.error('更新信息获取失败')
       }
     })
   }
@@ -153,10 +147,9 @@ export default class AppUpdate {
    * @param remoteV 远程版本号
    * @param equalCondition 版本号相等时也返回 true
    */
-  public static isHigherVersion(localV: string, remoteV: string, equalCondition: boolean = false): boolean {
-    if (localV === '')
-      localV = '0.0.0.0'
-    
+  public isHigherVersion (localV: string, remoteV: string, equalCondition: boolean = false): boolean {
+    if (localV === '') { localV = '0.0.0.0' }
+
     let diff
 
     try {
@@ -169,7 +162,7 @@ export default class AppUpdate {
 
       while (pos < minL) {
         diff = parseInt(remoteArr[pos]) - parseInt(localArr[pos])
-        if (diff != 0) {
+        if (diff !== 0) {
           break
         }
         pos++
@@ -182,9 +175,7 @@ export default class AppUpdate {
       } else {
         console.log('旧版本')
       } */
-    }
-    catch
-    {
+    } catch {
       console.error('版本号错误，无法比较', localV, remoteV)
     }
 

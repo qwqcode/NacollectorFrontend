@@ -1,52 +1,50 @@
-import AppNavbar from '../AppNavbar'
-import Task from '../Task'
-import Setting from '../Setting'
+import App from '../.'
 
 export default () => {
   // 导航栏操作按钮
-  AppNavbar.BtnBox.groupAdd('main-btns', {
+  App.AppNavbar.BtnBox.groupAdd('main-btns', {
     taskManager: {
       icon: 'assignment',
       title: '任务列表',
-      onClick() {
-        Task.taskManagerLayer.toggleLayer()
+      onClick () {
+        App.Task.taskManagerLayer.toggleLayer()
       }
     },
     downloadManager: {
       icon: 'download',
-      title: '下载列表',
+      title: '下载列表'
     },
     setting: {
       icon: 'settings',
       title: '设置',
-      onClick() {
-        Setting.getSidebar().toggle()
+      onClick () {
+        App.Setting.getSidebar().toggle()
       }
     }
   })
 
-  AppNavbar.BtnBox.groupAdd('task-runtime', {
+  App.AppNavbar.BtnBox.groupAdd('task-runtime', {
     backToTaskGen: {
       icon: 'chevron-left',
       title: '返回任务生成器',
-      onClick() {
-        Task.hide()
+      onClick () {
+        App.Task.hide()
       }
     },
     removeTask: {
       icon: 'close',
       title: '删除任务',
-      onClick() {
-        Task.getCurrent().remove()
+      onClick () {
+        App.Task.getCurrent().remove()
       }
     },
     showTaskInfo: {
       icon: 'info',
       title: '任务详情',
-      onClick() {
-        if (!Task.getCurrent()) { return }
+      onClick () {
+        if (!App.Task.getCurrent()) { return }
 
-        Task.getCurrent().showInfo()
+        App.Task.getCurrent().showInfo()
       }
     }
   }).setMostLeft().hide()

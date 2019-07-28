@@ -5,7 +5,9 @@
     "noImplicitAny": true,
     "module": "commonjs",
     "target": "es2018",
-    "allowJs": true
+    "allowJs": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true
   },
   "include": [
     "./src/**/*"

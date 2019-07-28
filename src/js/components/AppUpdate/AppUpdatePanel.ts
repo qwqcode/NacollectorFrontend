@@ -1,6 +1,6 @@
-import { html } from "common-tags"
-import AppUpdate from "./"
-import Dialog from "../AppLayer/Dialog"
+import { html } from 'common-tags'
+import App from '../.'
+import Dialog from '../AppLayer/Dialog'
 
 export default class AppUpdatePanel {
   public remoteData: any
@@ -8,31 +8,32 @@ export default class AppUpdatePanel {
   public dialogElem: JQuery<HTMLElement>
   public isUpdating: boolean = false
 
-  public constructor(remoteData: any) {
+  public constructor (remoteData: any) {
     this.remoteData = remoteData
     this.elem = $(html`<div class="update-manager"></div>`)
-    this.dialogElem = Dialog.open('Nacollector 版本管理器', this.elem).addClass('dialog-large')
+    this.dialogElem = new Dialog('Nacollector 版本管理器', this.elem).getEl().addClass('dialog-large')
     return this
   }
 
-  public getElem() {
+  public getElem () {
     return this.elem
   }
 
-  public updateRemoteData(remoteData: any) {
+  public updateRemoteData (remoteData: any) {
     this.remoteData = remoteData
     this.render(this.remoteData)
   }
 
-  public setLoading(status: boolean) {
-    if (status)
+  public setLoading (status: boolean) {
+    if (status) {
       $(html`<div class="update-manager-loading"><div class="loading-css-icon"></div> 数据获取中...</div>`).appendTo(this.elem)
-    else
-      this.elem.find('.update-manager-loading').remove(); 
+    } else {
+      this.elem.find('.update-manager-loading').remove()
+    }
   }
 
   /** 开始更新 */
-  public setIsUpdating(opts: {onUiReady: Function}) {
+  public setIsUpdating (opts: {onUiReady: Function}) {
     if (this.isUpdating) {
       console.error('已开始升级，无需重复调用 setIsUpdating')
       return
@@ -46,7 +47,7 @@ export default class AppUpdatePanel {
     opts.onUiReady()
   }
 
-  public setProgress(percentage: number, statusText: string = null) {
+  public setProgress (percentage: number, statusText: string = null) {
     if (!this.isUpdating) {
       console.error('AppUpdatePanel.setProgress 方法不可用，因为未在升级')
       return
@@ -56,18 +57,18 @@ export default class AppUpdatePanel {
       this.elem.find('.update-status-text').show().html(statusText)
     }
 
-    this.elem.find('.update-progress-bar-wrap').show().find('.update-progress-bar').css('width', percentage + '%')
+    this.elem.find('.update-progress-bar-wrap').show().find('.update-progress-bar').css('width', `${percentage}%`)
   }
 
-  public setSuccess(desc?: string) {
+  public setSuccess (desc?: string) {
     this.setResult(true, desc)
   }
 
-  public setError(reason?: string) {
+  public setError (reason?: string) {
     this.setResult(false, reason)
   }
 
-  public setResult(isSuccess: boolean, desc?: string) {
+  public setResult (isSuccess: boolean, desc?: string) {
     this.isUpdating = false
     this.dialogElem.find('.close-btn').show()
     this.elem.html('')
@@ -80,31 +81,30 @@ export default class AppUpdatePanel {
     `).appendTo(this.elem)
     resultElem.find('.desc').html(desc)
   }
-  
-  public render(remoteData: object) {
+
+  public render (remoteData: object) {
     this.elem.find('.module-list-wrap').remove()
     let wrapElem = $(html`<div class="module-list-wrap"></div>`).appendTo(this.elem)
-    
+
     // 操作按钮
     let actionBarElem = $(html`<div class="action-bar"></div>`).appendTo(wrapElem)
     $(html`<a class="dialog-btn update-btn"><i class="zmdi zmdi-cloud-upload"></i> 一键升级</a>`).appendTo(actionBarElem)
-    .click(() => {
+      .click(() => {
       // 更新按钮
-      AppUpdate.startUpdate(this.remoteData, AppUpdate.moduleVersionList)
-    })
+        App.AppUpdate.startUpdate(this.remoteData, App.AppUpdate.moduleVersionList)
+      })
     let updateStatusTextElem = $(html`<div class="update-status-text"></div>`).appendTo(actionBarElem)
     let updateProgressBarWrap = $(html`<div class="update-progress-bar-wrap" style="display: none;"></div>`).appendTo(actionBarElem)
     let updateProgressBaElem = $(html`<div class="update-progress-bar"></div>`).appendTo(updateProgressBarWrap)
-    
+
     // 更新说明
     let updateNoteElem = $(html`<div class="update-note"></div>`).appendTo(wrapElem)
     let updateNote = ''
     for (let version in this.remoteData['release_notes']) {
-      if (!AppUpdate.isHigherVersion(AppUpdate.moduleVersionList['Nacollector'], version, true))
-        continue
+      if (!App.AppUpdate.isHigherVersion(App.AppUpdate.moduleVersionList['Nacollector'], version, true)) { continue }
       updateNote += `#### ${version}\n${this.remoteData['release_notes'][version]}\n\n`
     }
-    updateNoteElem.html('<h2 class="update-note-title">发行说明</h2>' + window.marked(updateNote))
+    updateNoteElem.html(`<h2 class="update-note-title">发行说明</h2>${window.marked(updateNote)}`)
 
     // 创建列表
     let needUpdateModuleNameList = []
@@ -118,9 +118,9 @@ export default class AppUpdatePanel {
     for (let i in remoteModules) {
       let module = remoteModules[i]
       let moduleName = module['name']
-      let localVersion = AppUpdate.moduleVersionList[moduleName] || ''
+      let localVersion = App.AppUpdate.moduleVersionList[moduleName] || ''
       let remoteVersion = module['version'] || ''
-      let isNeedUpdate = AppUpdate.isHigherVersion(localVersion, remoteVersion)
+      let isNeedUpdate = App.AppUpdate.isHigherVersion(localVersion, remoteVersion)
       if (isNeedUpdate) needUpdateModuleNameList.push(moduleName)
       let itemElem = $(html`
         <div class="module-item">

@@ -1,7 +1,5 @@
+import App from '../.'
 import { html } from 'common-tags'
-import Task from '../Task'
-import AppNavbar from '../AppNavbar'
-import AppLayer from '../AppLayer'
 
 const TaskController = window.TaskController
 
@@ -22,7 +20,7 @@ class TaskItem {
   public isInProgress: boolean = true // 任务是否正在进行中
   public allowAutoScrollToBottom: boolean = true
 
-  public constructor(taskId: string, typeName: string, classLabel: string, parmsObj: object) {
+  public constructor (taskId: string, typeName: string, classLabel: string, parmsObj: object) {
     this._taskId = taskId
     this._typeName = typeName
     this._classLabel = classLabel
@@ -37,56 +35,56 @@ class TaskItem {
         <div class="container" style="width: 95%;">
         <div class="task-log-table"></div>
       </div>
-    `).appendTo(Task.sel.runtime)
+    `).appendTo(App.Task.sel.runtime)
   }
 
   /** 获取任务ID */
-  public getId() {
+  public getId () {
     return this._taskId
   }
 
   /** 获取任务调用类名 */
-  public getTypeName() {
+  public getTypeName () {
     return this._typeName
   }
 
   /** 获取任务调用类标签 */
-  public getClassLabel() {
+  public getClassLabel () {
     return this._classLabel
   }
 
   /** 获取任务参数对象 */
-  public getParmsObj() {
+  public getParmsObj () {
     return this._parmsObj
   }
 
   /** 设置标题 */
-  public setTitle() {
-    AppNavbar.setTitle(this.getTitle())
+  public setTitle () {
+    App.AppNavbar.setTitle(this.getTitle())
   }
   /** 获取标题 */
-  public getTitle() {
+  public getTitle () {
     return `${this.getClassLabel()} 任务ID：${this.getId()}`
   }
 
   /** 恢复成原来的标题 */
-  public setOriginalTitle() {
-    AppNavbar.setTitle('')
+  public setOriginalTitle () {
+    App.AppNavbar.setTitle('')
   }
 
   /** 显示 */
-  public show() {
-    Task.show(this.getId())
+  public show () {
+    App.Task.show(this.getId())
   }
 
   /** 隐藏 */
-  public hide() {
-    Task.hide()
+  public hide () {
+    App.Task.hide()
   }
 
   /** 显示任务信息 */
-  public showInfo() {
-    AppLayer.Dialog.open(
+  public showInfo () {
+    let dialog = new App.AppLayer.Dialog(
       '任务信息',
 
       `ID：${this.getId()}<br>` +
@@ -99,11 +97,11 @@ class TaskItem {
   }
 
   /** 日志 */
-  public log(text: string, level?: string) {
+  public log (text: string, level?: string) {
     let line = $('<div class="line" style="display: none" />')
     let levelsList: { [key: string]: string } = { I: '消息', S: '成功', W: '警告', E: '错误' }
     let innerText = ''
-    if (!!levelsList[level]) {
+    if (levelsList[level]) {
       line.attr('data-level', level)
       innerText += `<span class="tag">[${levelsList[level]}]</span> `
     }
@@ -123,24 +121,24 @@ class TaskItem {
     /* if (!this.allowAutoScrollToBottom)
       return; // throw ('不允许自动滚动到底部啦'); */
 
-    $(Task.sel.runtime).scrollTop($(Task.sel.runtime)[0].scrollHeight)
+    $(App.Task.sel.runtime).scrollTop($(App.Task.sel.runtime)[0].scrollHeight)
   }
 
   /** 删除 */
-  public remove() {
+  public remove () {
     if (this.getIsInProgress()) {
-      AppLayer.Dialog.open('删除任务', `任务 “${this.getTitle()}” 正在执行中...`,
+      let dialog = new App.AppLayer.Dialog('删除任务', `任务 “${this.getTitle()}” 正在执行中...`,
         ['中止并删除任务', () => {
           try {
             TaskController.abortTask(this.getId()).then((isSuccess: boolean) => {
               if (isSuccess) {
                 this._remove()
               } else {
-                AppLayer.Notify.error('任务中止失败')
+                App.AppLayer.Notify.error('任务中止失败')
               }
             })
           } catch (e) {
-            AppLayer.Notify.error('任务中止失败')
+            App.AppLayer.Notify.error('任务中止失败')
             throw e
           }
         }],
@@ -151,35 +149,35 @@ class TaskItem {
   }
 
   /** 删除，仅限内部调用 */
-  protected _remove() {
-    if (!!Task.getCurrent() && Task.getCurrent().getId() === this.getId()) {
+  protected _remove () {
+    if (!!App.Task.getCurrent() && App.Task.getCurrent().getId() === this.getId()) {
       this.hide()
     }
     // 对象删掉！
-    delete Task.list[this.getId()]
+    delete App.Task.list[this.getId()]
     // 任务管理器删除项目
-    Task.taskManagerLayer.removeItem(this.getId())
+    App.Task.taskManagerLayer.removeItem(this.getId())
     // 提示
-    AppLayer.Notify.success('任务删除成功')
+    App.AppLayer.Notify.success('任务删除成功')
   }
 
   /** 设置任务已结束状态 */
-  public taskIsEnd() {
+  public taskIsEnd () {
     this.isInProgress = false
   }
 
   /** 获取任务是否在进行中 */
-  public getIsInProgress() {
+  public getIsInProgress () {
     return this.isInProgress
   }
 
   /** 获取 Selector */
-  public getSel() {
+  public getSel () {
     return this._taskItemSel
   }
 
   /** 获取 Log Table Selector */
-  public getLogTableSel() {
+  public getLogTableSel () {
     return this._taskLogTableSel
   }
 }

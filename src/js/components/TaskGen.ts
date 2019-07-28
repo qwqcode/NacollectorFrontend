@@ -1,4 +1,4 @@
-import Task from './Task'
+import App from './'
 import { html } from 'common-tags'
 import Form from './SpiderList/Form'
 
@@ -6,28 +6,31 @@ import Form from './SpiderList/Form'
  * Task Generator (任务生成器)
  */
 export default class TaskGen {
-  public static readonly sel = {
+  public readonly sel = {
     form: '.taskgen-form',
     formToggle: '.taskgen-form-toggle',
     formToggleDropdown: '.taskgen-form-toggle .namespace-dropdown',
     formToggleBtns: '.taskgen-form-toggle .classname-btns'
   }
 
-  public static spiderList : { [key: string]: { [key: string]: { label: string, genForm?: Function } } } = {}
+  public spiderList: { [key: string]: { [key: string]: { label: string, genForm?: Function } } } = {}
 
   // 当前
-  public static current = {
-    typeName: <string> null,
-    inputs: <{ [key: string]: { label: string, inputSel: string, validator?: Function } }> {}
+  public current: {
+    typeName: string
+    inputs: { [key: string]: { label: string, inputSel: string, validator?: Function } }
+  } = {
+    typeName: null,
+    inputs: {}
   }
 
-  private static dropdownDom: JQuery
-  private static dropdownSelectedDom: JQuery
-  private static dropdownOptionDom: JQuery
-  private static dropdownBtnsDom: JQuery
+  private dropdownDom: JQuery
+  private dropdownSelectedDom: JQuery
+  private dropdownOptionDom: JQuery
+  private dropdownBtnsDom: JQuery
 
   // 初始化
-  public static init() {
+  public init () {
     // 遍历列表 生成按钮
     this.dropdownDom = $(html`
       <div class="namespace-dropdown">
@@ -46,7 +49,7 @@ export default class TaskGen {
     })
   }
 
-  public static dropdownOptionShow() {
+  public dropdownOptionShow () {
     this.dropdownOptionDom.addClass('show')
     // 若点击其他地方
     setTimeout(() => {
@@ -58,12 +61,12 @@ export default class TaskGen {
     }, 20)
   }
 
-  public static dropdownOptionHide() {
+  public dropdownOptionHide () {
     $(document).unbind('click.dropdown-option')
     this.dropdownOptionDom.removeClass('show')
   }
 
-  public static newSpiderType(name: string, label: string) {
+  public newSpiderType (name: string, label: string) {
     this.spiderList[name] = {
       _NamespaceInfo: {
         label: label
@@ -71,7 +74,7 @@ export default class TaskGen {
     }
   }
 
-  public static newSpider(typeName: string, name: string, label: string, genFormFunc: Function) {
+  public newSpider (typeName: string, name: string, label: string, genFormFunc: Function) {
     if (!this.spiderList[typeName]) {
       throw Error('找不到该 Spider 类型：' + typeName)
     }
@@ -81,7 +84,7 @@ export default class TaskGen {
     }
   }
 
-  public static loadSpiderList() {
+  public loadSpiderList () {
     this.dropdownOptionDom.html('') // 清空 dropdown 所有项目
     for (let [namespace, eachClass] of Object.entries(this.spiderList)) {
       let li = $(`<li data-namespace="${namespace}">${eachClass._NamespaceInfo.label}</li>`)
@@ -95,13 +98,13 @@ export default class TaskGen {
           let typeName = namespace + '.' + classname
           let btn = $(`<a>${classInfo['label']}</a>`).appendTo(this.dropdownBtnsDom)
           // 恢复当前已选中的按钮
-          if (!!TaskGen.current.typeName && TaskGen.current.typeName === typeName) {
+          if (!!this.current.typeName && this.current.typeName === typeName) {
             this.dropdownBtnsDom.find('a').removeClass('active')
             $(btn).addClass('active')
           }
           btn.click(() => {
             // 表单生成
-            TaskGen.formLoad(typeName)
+            this.formLoad(typeName)
             // 按钮选中
             this.dropdownBtnsDom.find('a').removeClass('active')
             btn.addClass('active')
@@ -125,7 +128,7 @@ export default class TaskGen {
   }
 
   // 分析 TypeName
-  public static spiderListGet (typeNameStr: string) {
+  public spiderListGet (typeNameStr: string) {
     let typeName = typeNameStr.split('.') || null
     if (!typeName || !typeName[0] || !typeName[1]) return null
     let namespace = typeName[0]
@@ -136,7 +139,7 @@ export default class TaskGen {
   }
 
   // 表单装载
-  public static formLoad(typeName: string) {
+  public formLoad (typeName: string) {
     // 点击操作按钮事件
     if (!this.spiderListGet(typeName)) { throw Error('this.spiderList 中没有 ' + typeName + '，无法创建表单！') }
 
@@ -158,19 +161,19 @@ export default class TaskGen {
       .appendTo(formDom)
 
     submitBtn.click(() => {
-      if (!TaskGen.formCheck()) { return false }
+      if (!this.formCheck()) { return false }
 
       // console.log(formDom.find(':input').serializeArray())
-      Task.createTask(typeName, spider.label, formDom.find(':input').serializeArray())
+      App.Task.createTask(typeName, spider.label, formDom.find(':input').serializeArray())
 
       return false
     })
   }
 
   // 表单提交检验
-  public static formCheck() {
+  public formCheck () {
     let isInputAllRight = true
-    for (let [i, obj] of Object.entries(TaskGen.current.inputs)) {
+    for (let [i, obj] of Object.entries(this.current.inputs)) {
       if (!obj.inputSel || $(obj.inputSel).length === 0) { throw Error(`表单输入元素 ${i} 的 Selector 无效`) }
 
       let inputSel = obj.inputSel

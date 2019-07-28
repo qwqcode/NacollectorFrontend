@@ -7,7 +7,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const PreloadWebpackPlugin = require('preload-webpack-plugin')
 const CssUrlRelativePlugin = require('css-url-relative-plugin')
 
-const IS_DEV = process.env.NODE_ENV === 'dev'
+const IS_DEV = process.env.NODE_ENV === 'development'
 const ROOT_PATH = path.resolve(__dirname)
 const SRC_PATH = path.resolve(ROOT_PATH, 'src')
 const BUILD_PATH = path.resolve(ROOT_PATH, 'dist')
@@ -20,7 +20,7 @@ const BANNER =
 
 const config = {
   mode: IS_DEV ? 'development' : 'production',
-  devtool: IS_DEV ? 'cheap-module-source-map' : 'source-map',
+  devtool: 'source-map', // IS_DEV ? 'cheap-module-eval-source-map' : 'source-map',
   entry: path.resolve(SRC_PATH, './js/index.ts'),
   output: {
     filename: 'js/[name].js',

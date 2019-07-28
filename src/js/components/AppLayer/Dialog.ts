@@ -4,33 +4,36 @@ import { html } from 'common-tags'
  * 内容层 对话框
  */
 export default class Dialog {
-  public static open(title: string, content: string|JQuery<HTMLElement>, yesBtn?: [string?, Function?], cancelBtn?: [string?, Function?]): JQuery<HTMLElement> {
+  private dialogLayerEl: JQuery<HTMLElement>
+  private dialogEl: JQuery<HTMLElement>
+
+  public constructor (title: string, content: string|JQuery<HTMLElement>, yesBtn?: [string?, Function?], cancelBtn?: [string?, Function?]) {
     if ($('.dialog-layer').length !== 0) {
       $('.dialog-layer').remove()
     }
 
-    let dialogLayerElem = $('<div class="dialog-layer anim-fade-in" />').appendTo('body')
+    this.dialogLayerEl = $('<div class="dialog-layer anim-fade-in" />').appendTo('body')
     let hideDialogLayer = () => {
-      dialogLayerElem.addClass('anim-fade-out')
+      this.dialogLayerEl.addClass('anim-fade-out')
       setTimeout(() => {
-        dialogLayerElem.hide()
+        this.dialogLayerEl.hide()
       }, 200)
     }
 
-    let dialogDom = $(html`
+    this.dialogEl = $(html`
     <div class="dialog-inner">
       <div class="dialog-title"><span class="title-text">${title}</span></div>
       <div class="dialog-content"></div>
     </div>
-    `).appendTo(dialogLayerElem)
+    `).appendTo(this.dialogLayerEl)
 
-    dialogDom.find('.dialog-content').append(content)
+    this.dialogEl.find('.dialog-content').append(content)
 
     // 底部按钮
     let genBottomBtn = (text: string, onClickFunc: Function) => {
       let dialogBottomElem = $('.dialog-bottom')
       if (!dialogBottomElem.length) {
-        dialogBottomElem = $(`<div class="dialog-bottom"></div>`).appendTo(dialogDom)
+        dialogBottomElem = $(`<div class="dialog-bottom"></div>`).appendTo(this.dialogEl)
       }
       let btnElem = $(`<a class="dialog-btn yes-btn"></a>`)
       btnElem.text(text)
@@ -56,12 +59,18 @@ export default class Dialog {
     // 右上角关闭按钮
     if (!yesBtn && !cancelBtn) {
       let closeBtn = $('<a class="right-btn close-btn"><i class="zmdi zmdi-close"></i></a>')
-      closeBtn.appendTo(dialogDom.find('.dialog-title'))
+      closeBtn.appendTo(this.dialogEl.find('.dialog-title'))
       closeBtn.click(() => {
         hideDialogLayer()
       })
     }
+  }
 
-    return dialogDom
+  public getEl () {
+    return this.dialogEl
+  }
+
+  public getLayerEl () {
+    return this.dialogLayerEl
   }
 }

@@ -1,30 +1,30 @@
-import AppNavbar from '../AppNavbar'
+import App from '../.'
 
 import { Base64 } from 'js-base64'
 import TaskItem from './TaskItem'
 import TaskManagerLayer from './TaskManagerLayer'
-import AppLayer from '../AppLayer';
 
 const TaskController = window.TaskController
-
-window.taskItem = TaskItem
 
 /**
  * 任务
  */
 export default class Task {
-  public static readonly sel = {
+  public readonly sel = {
     runtime: '.task-runtime'
   }
 
   /** 任务列表 */
-  public static list: { [key: string]: TaskItem } = {}
+  public list: { [key: string]: TaskItem } = {}
 
   /** 当前显示的任务ID */
-  public static currentDisplayedId: string = null
+  public currentDisplayedId: string = null
+
+  /** 任务管理器层 */
+  public taskManagerLayer: TaskManagerLayer = new TaskManagerLayer()
 
   /** 创建任务 */
-  public static createTask(typeName: string, classLabel: string, parmsObj: object): TaskItem {
+  public createTask (typeName: string, classLabel: string, parmsObj: object): TaskItem {
     let taskId = new Date().getTime().toString()
 
     // 实例化 TaskItem
@@ -33,13 +33,13 @@ export default class Task {
 
     // 让任务控制器 开始一个执行新任务
     taskItem.show()
-    Task.taskManagerLayer.addItem(taskId)
+    this.taskManagerLayer.addItem(taskId)
     try {
       TaskController.createTask(taskId, typeName, classLabel, JSON.stringify(parmsObj)).then((callback: any) => {
         // ... 结束加载
       })
     } catch (e) {
-      AppLayer.Notify.error('创建任务失败')
+      App.AppLayer.Notify.error('创建任务失败')
       throw e
     }
 
@@ -47,21 +47,21 @@ export default class Task {
   }
 
   /** 获取任务 */
-  public static get(taskId: string): TaskItem {
+  public get (taskId: string): TaskItem {
     if (!this.list.hasOwnProperty(taskId)) { return null }
 
     return this.list[taskId]
   }
 
   /** 获取当前显示任务 */
-  public static getCurrent(): TaskItem {
+  public getCurrent (): TaskItem {
     if (!this.get(this.currentDisplayedId)) { return null }
 
     return this.get(this.currentDisplayedId)
   }
 
   /** 显示指定任务 */
-  public static show(taskId: string) {
+  public show (taskId: string) {
     if (!this.get(taskId)) { throw Error(`未找到任务 ${taskId}`) }
 
     if (this.getCurrent() !== null) { this.hide() }
@@ -88,17 +88,17 @@ export default class Task {
     taskObj.setTitle()
 
     // 显示导航栏控制按钮组
-    AppNavbar.BtnBox.getBtnGroup('task-runtime').show()
+    App.AppNavbar.BtnBox.getBtnGroup('task-runtime').show()
 
     this.currentDisplayedId = taskId
   }
 
   /** 隐藏 */
-  public static hide() {
+  public hide () {
     if (this.currentDisplayedId === null) { throw Error('未显示任何任务') }
 
     let runtimeSel = this.sel.runtime
-    let taskItemSel = Task.getCurrent().getSel()
+    let taskItemSel = this.getCurrent().getSel()
 
     $(runtimeSel).hide()
     $(runtimeSel).off('scroll')
@@ -107,13 +107,13 @@ export default class Task {
     this.getCurrent().setOriginalTitle()
 
     // 隐藏导航栏控制按钮组
-    AppNavbar.BtnBox.getBtnGroup('task-runtime').hide()
+    App.AppNavbar.BtnBox.getBtnGroup('task-runtime').hide()
 
     this.currentDisplayedId = null
   }
 
   /** 日志 */
-  public static log(taskId: string, text: string, level?: string, timeStamp?: string, textIsBase64?: boolean) {
+  public log (taskId: string, text: string, level?: string, timeStamp?: string, textIsBase64?: boolean) {
     if (!this.get(taskId)) { throw Error(`未找到任务 ${taskId}`) }
 
     if (typeof textIsBase64 === 'boolean' && textIsBase64 === true) { text = Base64.decode(text) }
@@ -121,18 +121,16 @@ export default class Task {
     this.get(taskId).log(text, level)
   }
 
-  public static taskManagerLayer = TaskManagerLayer // 任务管理器层
-
   /** 是否有 task 正在运行 */
-  public static isTaskRunning() {
+  public isTaskRunning () {
     let isTaskRunning = false
-    for (let i in Task.list) {
-      if (Task.list[i].getIsInProgress()) {
+    for (let i in this.list) {
+      if (this.list[i].getIsInProgress()) {
         isTaskRunning = true
-        break;
+        break
       }
     }
-    
+
     return isTaskRunning
   }
 }

@@ -4,25 +4,25 @@ export default class SettingItem {
   protected _elem: JQuery
   protected _groupDom: JQuery
 
-  public constructor(groupDom: JQuery) {
+  public constructor (groupDom: JQuery) {
     this._elem = $('<div class="setting-item"></div>').appendTo(groupDom)
     this._groupDom = groupDom
     return this
   }
 
-  public getElem() {
+  public getElem () {
     return this._elem
   }
 
   /** 按钮 */
-  public btnBlock(text: string, onClick: Function) {
+  public btnBlock (text: string, onClick: Function) {
     return $(`<button type="button" class="setting-btn-block">${text}</button>`).click(() => {
       onClick()
     }).appendTo(this._elem)
   }
 
   /** 按钮 · 开关 */
-  public btnToggle(text: string, turnOnEvent: Function, turnOffEvent: Function) {
+  public btnToggle (text: string, turnOnEvent: Function, turnOffEvent: Function) {
     let btnDom = $(html`
         <button type="button" class="setting-btn-block setting-btn-toggle">
           <div class="left-text">${text}</div>
@@ -34,13 +34,13 @@ export default class SettingItem {
 
     let toggleDom = btnDom.find('.toggle')
     let btnObj = {
-      setVal(bool: boolean) {
+      setVal (bool: boolean) {
         if (bool) toggleDom.addClass('turn-on'); else toggleDom.removeClass('turn-on')
       },
-      setOn() {
+      setOn () {
         btnObj.setVal(true)
       },
-      setOff() {
+      setOff () {
         btnObj.setVal(false)
       },
       toggle () {
@@ -56,7 +56,7 @@ export default class SettingItem {
         return btnDom
       }
     }
-    
+
     btnDom.click(() => {
       btnObj.toggle()
     })
@@ -65,7 +65,7 @@ export default class SettingItem {
   }
 
   /** 信息展示 */
-  public infoShow(label: string, value: string) {
+  public infoShow (label: string, value: string) {
     return $(html`
           <div class="two-line">
             <span class="label">${label}</span>

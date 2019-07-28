@@ -1,23 +1,22 @@
-import AppLayer from '../AppLayer'
-import Task from './index'
+import App from '../.'
 import { html } from 'common-tags'
 
 export default class TaskManagerLayer {
-  public static init() {
-    let taskManager = AppLayer.Sidebar.register('taskManager')
+  public init () {
+    let taskManager = App.AppLayer.Sidebar.register('taskManager')
     taskManager.setTitle('任务列表', '#4265c7')
     taskManager.setWidth(450)
     taskManager.setInner('<div class="task-manager"></div>')
   }
 
-  public static getItemSel(taskId: string) {
+  public getItemSel (taskId: string) {
     return '[data-taskmanager-taskid="' + taskId + '"]'
   }
 
-  public static addItem(taskId: string) {
-    if (!Task.get(taskId)) { throw Error('未找到此任务 ' + taskId) }
+  public addItem (taskId: string) {
+    if (!App.Task.get(taskId)) { throw Error('未找到此任务 ' + taskId) }
 
-    let task = Task.get(taskId)
+    let task = App.Task.get(taskId)
     let taskItem = $(html`
       <div class="task-item" data-taskmanager-taskid="${taskId}">
         <div class="left">
@@ -33,15 +32,15 @@ export default class TaskManagerLayer {
         </div>
       </div>`)
     taskItem.find('[data-toggle="task-show"]').click(() => {
-      Task.show(taskId)
+      App.Task.show(taskId)
     })
     taskItem.find('[data-toggle="task-remove"]').click(() => {
-      Task.get(taskId).remove()
+      App.Task.get(taskId).remove()
     })
     taskItem.prependTo(this.getLayer().getElem().find('.task-manager'))
   }
 
-  public static removeItem(taskId: string) {
+  public removeItem (taskId: string) {
     if ($(this.getItemSel(taskId)).length === 0) { throw Error(`未找到此任务 ${taskId}`) }
 
     setTimeout(() => {
@@ -50,11 +49,11 @@ export default class TaskManagerLayer {
     }, 20)
   }
 
-  public static toggleLayer() {
+  public toggleLayer () {
     this.getLayer().toggle()
   }
 
-  public static getLayer() {
-    return AppLayer.Sidebar.get('taskManager')
+  public getLayer () {
+    return App.AppLayer.Sidebar.get('taskManager')
   }
 }

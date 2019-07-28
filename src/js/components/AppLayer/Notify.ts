@@ -3,17 +3,17 @@ import { html } from 'common-tags'
 /**
  * 内容层 通知
  */
-export default class Notify {
-  public static success(message: string): void {
+export default {
+  success (message: string): void {
     this.show(message, 's')
-  }
-  
-  public static error(message: string): void {
+  },
+
+  error (message: string): void {
     this.show(message, 'e')
-  }
+  },
 
   // level: s, e
-  public static show(message: string, level: string, timeout?: number): void {
+  show (message: string, level: string, timeout?: number): void {
     timeout = (typeof timeout === 'number') ? timeout : 2000
 
     let layerElem = $('.notify-layer')
@@ -22,10 +22,10 @@ export default class Notify {
     }
 
     let notifyElem = $(html`
-      <div class="notify-item anim-fade-in ${level ? ('type-' + level) : ''}">
-        <p class="notify-content">${message}</p>
-      </div>
-    `).prependTo(layerElem)
+    <div class="notify-item anim-fade-in ${level ? ('type-' + level) : ''}">
+      <p class="notify-content">${message}</p>
+    </div>
+  `).prependTo(layerElem)
 
     let notifyRemove = () => {
       notifyElem.addClass('anim-fade-out')
