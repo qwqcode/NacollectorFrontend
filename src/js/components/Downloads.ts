@@ -47,7 +47,7 @@ export default class Downloads {
   public static listElem: JQuery
 
   /** 初始化 */
-  public static init() {
+  public static init (): void {
     this.listElem = $('<div class="downloads-list"></div>')
     let panelObj = AppNavbar.Panel.register(this.panelKey, this.navbarBtnName)
     panelObj.setTitle('<i class="zmdi zmdi-download"></i> 下载列表')

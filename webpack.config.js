@@ -6,8 +6,9 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const PreloadWebpackPlugin = require('preload-webpack-plugin')
 const CssUrlRelativePlugin = require('css-url-relative-plugin')
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin')
 
-const IS_DEV = process.env.NODE_ENV === 'dev'
+const IS_DEV = process.env.NODE_ENV === 'development'
 const ROOT_PATH = path.resolve(__dirname)
 const SRC_PATH = path.resolve(ROOT_PATH, 'src')
 const BUILD_PATH = path.resolve(ROOT_PATH, 'dist')
@@ -21,7 +22,7 @@ const BANNER =
 const config = {
   mode: IS_DEV ? 'development' : 'production',
   devtool: IS_DEV ? 'cheap-module-source-map' : 'source-map',
-  entry: path.resolve(SRC_PATH, './js/index.ts'),
+  entry: path.resolve(SRC_PATH, './index.tsx'),
   output: {
     filename: 'js/[name].js',
     path: BUILD_PATH
@@ -29,13 +30,8 @@ const config = {
   module: {
     rules: [
       {
-        test: /\.js$/,
-        exclude: /node_modules/,
-        loader: 'babel-loader'
-      },
-      {
-        test: /\.tsx?$/,
-        use: 'ts-loader',
+        test: /\.(j|t)s(x?)$/,
+        use: 'babel-loader',
         exclude: /node_modules/
       },
       {
@@ -65,7 +61,7 @@ const config = {
             options: {
               sourceMap: IS_DEV,
               includePaths: [SRC_PATH],
-              data: '@import "scss/_variables.scss";'
+              data: '@import "@/css/_variables.scss";@import "@/css/_extends.scss";'
             }
           }
         ]
@@ -131,6 +127,7 @@ const config = {
         to: 'assets'
       }
     ]),
+    new ForkTsCheckerWebpackPlugin(),
     new HtmlWebPackPlugin({
       template: path.resolve(SRC_PATH, './index.html'),
       // favicon: path.resolve(SRC_PATH, './assets/icon.ico'),
@@ -152,7 +149,8 @@ const config = {
   ],
   resolve: {
     alias: {
-      '@': SRC_PATH
+      '@': SRC_PATH,
+      'react-dom': '@hot-loader/react-dom'
     },
     extensions: ['*', '.ts', '.tsx', '.js']
   },
