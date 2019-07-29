@@ -1,12 +1,9 @@
 import * as React from 'react'
 import { hot } from 'react-hot-loader/root'
-import TitlePanel from './TitlePanel'
+import Header from './main/Header'
 
-const App = (): JSX.Element => (
-  <div>
-    <h1>Hello, world!</h1>
-    <TitlePanel></TitlePanel>
-  </div>
+const App = () => (
+  <Header></Header>
 )
 
 export default hot(App)

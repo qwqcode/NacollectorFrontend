@@ -1,0 +1,197 @@
+$hover-bg: hsla(0, 0%, 100%, 0.1);
+
+.app-header {
+  user-select: none;
+}
+
+.app-control-box {
+  $height: 29px;
+
+  @extend %app-top-bar;
+  z-index: 102;
+  top: 1px;
+  height: $height;
+  background-color: #21252b;
+
+  &.blur {
+    background-color: #21252b;
+  }
+
+  .inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    -webkit-app-region: drag;
+    user-select: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .brand {
+    padding: 1px 22px 1px 15px;
+    background-color: rgba(255, 255, 255, 0.05);
+    position: absolute;
+    top: -1px;
+    left: 10px;
+    font-size: 16px;
+    color: #fff;
+    font-family: 'SAOUI';
+    border-top: 1px solid #808080;
+  }
+  
+  .controls {
+    display: flex;
+    width: 136px;
+    height: $height;
+    justify-content: space-between;
+    position: absolute;
+    top: 0;
+    right: 0px;
+  
+    .window-icon-bg {
+      display: inline-block;
+      -webkit-app-region: no-drag;
+      height: 100%;
+      width: 33.34%;
+  
+      .window-icon {
+        height: 100%;
+        width: 100%;
+        -webkit-mask-size: 23.2% !important;
+        background-color: #9da5b4;
+        $iconBasePath: '~@/assets/img/icons';
+  
+        &.window-minimize {
+          -webkit-mask: url($iconBasePath+'/minimize.svg') no-repeat 50% 50%;
+        }
+  
+        &.window-maximize {
+          -webkit-mask: url($iconBasePath+'/maximize.svg') no-repeat 50% 50%;
+        }
+  
+        &.window-unmaximize {
+          -webkit-mask: url($iconBasePath+'/unmaximize.svg') no-repeat 50% 50%;
+        }
+  
+        &.window-close {
+          -webkit-mask: url($iconBasePath+'/close.svg') no-repeat 50% 50%;
+        }
+      }
+  
+      &:hover {
+        background-color: $hover-bg;
+  
+        .window-icon {
+          background-color: #ffffff;
+        }
+      }
+  
+      &.red:hover {
+        background-color: rgba(232, 17, 35, 0.9);
+      }
+    }
+  }
+}
+
+.app-action-bar {
+  $height: 35px;
+
+  @extend %app-top-bar;
+  top: 30px;
+  padding-left: 10px;
+  height: $height;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background-color: #21252b;
+  box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px;
+  -webkit-app-region: drag;
+
+  .tab-box {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    overflow: scroll !important;
+
+    &::-webkit-scrollbar {
+      height: 2px;
+    }
+
+    &::-webkit-scrollbar-corner {
+      background: transparent;
+    }
+    
+    .tab {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      height: $height;
+      width: 140px;
+      min-width: fit-content;
+      color: #FFF;
+      white-space: nowrap;
+      cursor: default;
+      background-color: #282c34;
+      -webkit-app-region: no-drag;
+      font-size: 12px;
+
+      &.active {
+        background-color: #132b5a;
+      }
+
+      &:not(:last-child) {
+        margin-right: 1px;
+      }
+
+      & > .name {
+        flex: 1;
+        padding-left: 14px;
+      }
+
+      & > .close-btn {
+        height: $height;
+        line-height: $height;
+        padding: 0 5px 0 5px;
+        margin: 0 3px 0 0;
+        justify-content: flex-end;
+
+        & > i {
+          border-radius: 100px;
+          font-size: 14px;
+          padding: 3px 6px;
+        }
+
+        &:hover > i {
+          background-color: $hover-bg;
+        }
+      }
+    }
+  }
+
+  .btn-group {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+
+    .btn {
+      width: 50px;
+      height: $height;
+      line-height: $height;
+      color: #fff;
+      font-size: 15px;
+      text-align: center;
+      cursor: pointer;
+      user-select: none;
+      -webkit-app-region: no-drag;
+
+      &:hover {
+        background-color: $hover-bg;
+      }
+
+      & > i {
+      }
+    }
+  }
+}
