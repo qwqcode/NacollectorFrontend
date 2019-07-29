@@ -21,7 +21,7 @@ const BANNER =
 const config = {
   mode: IS_DEV ? 'development' : 'production',
   devtool: 'source-map', // IS_DEV ? 'cheap-module-eval-source-map' : 'source-map',
-  entry: path.resolve(SRC_PATH, './js/index.ts'),
+  entry: path.resolve(SRC_PATH, 'index.ts'),
   output: {
     filename: 'js/[name].js',
     path: BUILD_PATH
@@ -65,7 +65,7 @@ const config = {
             options: {
               sourceMap: IS_DEV,
               includePaths: [SRC_PATH],
-              data: '@import "scss/_variables.scss";'
+              data: '@import "~@/css/_variables.scss";'
             }
           }
         ]

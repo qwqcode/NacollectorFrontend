@@ -1,6 +1,6 @@
-import '../scss/style.scss'
+import './css/style.scss'
 import 'material-design-iconic-font/dist/css/material-design-iconic-font.min.css'
-import '../lib/outclick.min.js'
-import '../lib/tooltip.js'
+import './lib/outclick.min.js'
+import './lib/tooltip.js'
 
 import './nacollector.ts'
