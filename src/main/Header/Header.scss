@@ -1,4 +1,5 @@
 $hover-bg: hsla(0, 0%, 100%, 0.1);
+$bg: #21252b;
 
 .app-header {
   user-select: none;
@@ -11,10 +12,10 @@ $hover-bg: hsla(0, 0%, 100%, 0.1);
   z-index: 102;
   top: 1px;
   height: $height;
-  background-color: #21252b;
+  background-color: $bg;
 
   &.blur {
-    background-color: #21252b;
+    background-color: $bg;
   }
 
   .inner {
@@ -59,7 +60,7 @@ $hover-bg: hsla(0, 0%, 100%, 0.1);
         height: 100%;
         width: 100%;
         -webkit-mask-size: 23.2% !important;
-        background-color: #9da5b4;
+        background-color: #FFF;
         $iconBasePath: '~@/assets/img/icons';
   
         &.window-minimize {
@@ -98,28 +99,39 @@ $hover-bg: hsla(0, 0%, 100%, 0.1);
   $height: 35px;
 
   @extend %app-top-bar;
+  z-index: 103;
   top: 30px;
   padding-left: 10px;
   height: $height;
   display: flex;
   flex-direction: row;
   align-items: center;
-  background-color: #21252b;
-  box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px;
+  background-color: $bg;
+  box-shadow: rgba(0, 0, 0, 0.12) 0px 6px 3px, rgba(0, 0, 0, 0.12) 0px 1px 1px;
   -webkit-app-region: drag;
 
   .tab-box {
+    position: relative;
     flex: 1;
     display: flex;
     flex-direction: row;
+    margin-top: 1px;
     overflow: scroll !important;
 
     &::-webkit-scrollbar {
-      height: 2px;
+      height: 3px;
     }
 
     &::-webkit-scrollbar-corner {
       background: transparent;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background-color: rgba(255, 255, 255, 0.1);
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.3);
+      }
     }
     
     .tab {
@@ -132,12 +144,16 @@ $hover-bg: hsla(0, 0%, 100%, 0.1);
       color: #FFF;
       white-space: nowrap;
       cursor: default;
-      background-color: #282c34;
       -webkit-app-region: no-drag;
       font-size: 12px;
+      box-shadow: rgba(0, 0, 0, 0.12) 0px 6px 3px;
 
       &.active {
         background-color: #132b5a;
+      }
+
+      &:hover:not(.active) {
+        background-color: $hover-bg;
       }
 
       &:not(:last-child) {
@@ -164,6 +180,18 @@ $hover-bg: hsla(0, 0%, 100%, 0.1);
 
         &:hover > i {
           background-color: $hover-bg;
+        }
+      }
+
+      &.fixed {
+        width: $height;
+        height: $height;
+        min-width: $height;
+        
+        & > .add-btn {
+          width: 100%;
+          text-align: center;
+          font-size: 15px;
         }
       }
     }

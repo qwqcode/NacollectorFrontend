@@ -3,7 +3,11 @@ import { hot } from 'react-hot-loader/root'
 import Header from './main/Header'
 
 const App = () => (
-  <Header></Header>
+  <div className="app">
+    <Header></Header>
+    <div className="app-wrap">
+    </div>
+  </div>
 )
 
 export default hot(App)

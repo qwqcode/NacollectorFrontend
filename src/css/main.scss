@@ -3,16 +3,34 @@
   src: url('~@/assets/fonts/SAOUI.otf');
 }
 
-html, body {
-  overflow: hidden;
-  margin: 0;
-  font-family: "Microsoft YaHei", "Helvitica Neue", Helvitica, Arial, "Hiragino Sans GB", "SimHei", sans-serif;
-  background: #333333;
+body, html {
+  font-family: "Helvetica Neue", "PingFangSC-Light", "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
+  color: #FFF;
+  background-color: #21252b;
+  -webkit-font-smoothing: antialiased;
+  transition: opacity .2s ease-in-out, background .2s ease-in-out;
   font-size: 14px;
   line-height: 1.42857143;
-  color: rgba(255, 255, 255, 0.6);
-  height: 100%;
-  transition: opacity .2s ease-in-out, background .2s ease-in-out;
+}
+
+.app {
+  border: 1px solid #333333;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+
+  .app-wrap {
+    position: relative;
+    margin-top: 65px;
+    margin-left: 4px;
+    margin-right: 4px;
+    padding: 0 7px;
+    height: calc(100vh - 65px - 1px);
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
 }
 
 * {
@@ -31,20 +49,6 @@ button, input, select, textarea {
   font-family: inherit;
   font-size: inherit;
   line-height: inherit;
-}
-
-.wrap {
-  position: fixed;
-  top: 65px;
-  left: 0;
-  right: 0;
-  overflow-x: hidden;
-  overflow-y: auto;
-  height: calc(100vh - 65px);
-  width: 100vw;
-  opacity: 0;
-  transition: opacity 0.4s cubic-bezier(0.65, 0.05, 0.36, 1), background 0.4s cubic-bezier(0.65, 0.05, 0.36, 1);
-  background: #21252b;
 }
 
 .container {
@@ -101,24 +105,24 @@ button, input, select, textarea {
   }
 }
 
-.wrap::-webkit-scrollbar-thumb, .task-runtime::-webkit-scrollbar {
+.app-wrap::-webkit-scrollbar-thumb, .task-runtime::-webkit-scrollbar {
   width: 4px;
   background: transparent;
 }
 
-.wrap::-webkit-scrollbar-thumb, .task-runtime::-webkit-scrollbar-thumb, .wrap::-webkit-scrollbar-thumb:window-inactive, .task-runtime::-webkit-scrollbar-thumb:window-inactive {
+.app-wrap::-webkit-scrollbar-thumb, .task-runtime::-webkit-scrollbar-thumb, .app-wrap::-webkit-scrollbar-thumb:window-inactive, .task-runtime::-webkit-scrollbar-thumb:window-inactive {
   background: rgba(191, 191, 191, 0.57);
 }
 
-.wrap::-webkit-scrollbar-thumb:vertical:hover, .task-runtime::-webkit-scrollbar-thumb:vertical:hover {
+.app-wrap::-webkit-scrollbar-thumb:vertical:hover, .task-runtime::-webkit-scrollbar-thumb:vertical:hover {
   background: rgba(220, 220, 220, 0.77);
 }
 
-.wrap::-webkit-scrollbar-thumb:vertical:active, .task-runtime::-webkit-scrollbar-thumb:vertical:active {
+.app-wrap::-webkit-scrollbar-thumb:vertical:active, .task-runtime::-webkit-scrollbar-thumb:vertical:active {
   background: rgba(255, 255, 255, 0.77);
 }
 
-::-webkit-input-placeholder {
+.app-wrap::-webkit-input-placeholder {
   color: #97a4ab;
 }
 

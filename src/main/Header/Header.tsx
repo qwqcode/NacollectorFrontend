@@ -70,6 +70,7 @@ export default function Header () {
           <div className="tab"><div className="name">[结束] 商品详情页图片解析</div><div className="close-btn"><i className="zmdi zmdi-close"></i></div></div>
           <div className="tab"><div className="name">[执行中] 商品详情页视频抓取</div><div className="close-btn"><i className="zmdi zmdi-close"></i></div></div>
           <div className="tab"><div className="name">[结束] 淘宝店铺搜索卖家ID名采集</div><div className="close-btn"><i className="zmdi zmdi-close"></i></div></div>
+          <div className="tab fixed"><div className="add-btn"><i className="zmdi zmdi-plus"></i></div></div>
         </div>
         <div className="btn-group">
           <span className="btn">

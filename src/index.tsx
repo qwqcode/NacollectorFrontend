@@ -12,10 +12,7 @@ import * as React from 'react'
 import { render } from 'react-dom'
 import App from './App'
 
-render(
-  <App />,
-  document.querySelector('#app')
-)
+render(<App />, document.getElementById('root'))
 
 $(document).ready(() => {
   setTimeout((): void => {
