@@ -1,2 +1,5 @@
-dist/*
-src/lib/*
+.gitignore
+dist
+plugins
+.nuxt
+node_modules
